@@ -23,6 +23,38 @@
       }
     });
 
+    AFRAME.registerComponent('percent_anim', {
+        multiple: true,
+        schema: {
+            value: {
+                type: "int",
+                default: 100
+            }
+        },
+        init: function () {
+            let val = this.data.value;
+            this.el.addEventListener("animstart", function(){
+                    
+                    let prop = {percent: 0};
+
+                    let el = this;
+                    AFRAME.ANIME({
+                        targets: prop,
+                        percent: val ,
+                        round: 1,
+                        easing: "linear",
+                        duration: 1000,
+                        update: function() {
+                            el.setAttribute("text", {
+                            
+                                value: Math.round(prop.percent) + "%"
+                            })
+                        }
+                    })
+                })
+        }
+    });
+
     
   </script>
     </head>
@@ -58,11 +90,11 @@
                     geometry="primitive: plane; width: 1.5; height: 1;"
                     material="color:black; opacity: 0;"
 
-                    position="0 0 -1"
+                    position="0 0 -0.7"
                     animation__position="
                         property: position; 
-                        from: 0 -0.5 -1; 
-                        to:0 0 -1; 
+                        from: 0 -0.5 -0.7; 
+                        to:0 0 -0.7; 
                         dur:500; 
                         easing: easeOutQuad; 
                         startEvents: animstart; "
@@ -127,12 +159,17 @@
                 triggeranimationfor__bar1="#bar-1"
                 triggeranimationfor__bar2="#bar-2"
                 triggeranimationfor__bar3="#bar-3"
+
+                triggeranimationfor__barpercent1="#barpercent-1"
+                triggeranimationfor__barpercent2="#barpercent-2"
+                triggeranimationfor__barpercent3="#barpercent-3"
+                
             >
                 <a-entity
                     geometry="
                         primitive:box;
                         width:0.3;
-                        height: 1;
+                        height: 0;
                         depth:0.3;
                     "
 
@@ -144,7 +181,51 @@
 
                     id="bar-1"
 
-                ></a-entity>
+                    animation__height="
+                        property: geometry.height;
+                        from: 0;
+                        to: 1;
+                        easing: easeOutQuad;
+                        dur: 1000;
+
+                        startEvents: animstart;
+                    "
+
+                    animation__position="
+                        property: position;
+                        from: -0.5 -0.5 -0.5;
+                        to: -0.5 0 -0.5;
+                        easing: easeOutQuad;
+                        dur: 1000;
+
+                        startEvents: animstart;
+                    "
+
+                >
+                    <a-entity
+                        text="
+                            value: 50%;
+                            color: #000;
+                            shader: msdf;
+                            font: https://raw.githubusercontent.com/etiennepinchon/aframe-fonts/master/fonts/roboto/Roboto-Bold.json;       
+                            wrapCount: 5;
+                            width: 0.3;
+                            align:center;
+                            
+                        " 
+
+                        percent_anim="value: 100"
+
+                        material="
+                            color: #ffffff;
+                        "
+
+                        id="barpercent-2"
+                    
+                        position="0 0 0.2"
+                                                    
+                    ></a-entity>
+                </a-entity>
 
 
 
@@ -156,15 +237,59 @@
                         depth:0.3;
                     "
 
-                    position="0 -0.3 -0.5"
+                    position="0 0 -0.5"
 
                     material="
                         color: #00f000;
                     "
 
+                    animation__height="
+                        property: geometry.height;
+                        from: 0;
+                        to: 0.4;
+                        easing: easeOutQuad;
+                        dur: 1000;
+
+                        startEvents: animstart;
+                    "
+
+                    animation__position="
+                        property: position;
+                        from: 0 -0.5 -0.5;
+                        to: 0 -0.3 -0.5;
+                        easing: easeOutQuad;
+                        dur: 1000;
+
+                        startEvents: animstart;
+                    "
+
                     id="bar-2"
    
-                ></a-entity>
+                >
+                    <a-entity
+                        text="
+                            value: 50%;
+                            color: #000;
+                            shader: msdf;
+                            font: https://raw.githubusercontent.com/etiennepinchon/aframe-fonts/master/fonts/roboto/Roboto-Bold.json;       
+                            wrapCount: 5;
+                            width: 0.3;
+                            align:center;
+                            
+                        " 
+
+                        percent_anim="value: 40"
+
+                        material="
+                            color: #ffffff;
+                        "
+
+                        id="barpercent-3"
+                    
+                        position="0 0 0.2"
+                                                    
+                    ></a-entity>
+                </a-entity>
 
 
 
@@ -176,14 +301,58 @@
                         depth:0.3;
                     "
 
-                    position="0.5 -0.1 -0.5"
+                    position="0.5 0 -0.5"
 
                     material="
                         color: #00f000;
                     "
 
+                    animation__height="
+                        property: geometry.height;
+                        from: 0;
+                        to: 0.8;
+                        easing: easeOutQuad;
+                        dur: 1000;
+
+                        startEvents: animstart;
+                    "
+
+                    animation__position="
+                        property: position;
+                        from: 0.5 -0.5 -0.5;
+                        to: 0.5 -0.1 -0.5;
+                        easing: easeOutQuad;
+                        dur: 1000;
+
+                        startEvents: animstart;
+                    "
+
                     id="bar-3"
-                ></a-entity>
+                >
+                    <a-entity
+                        text="
+                            value: 50%;
+                            color: #000;
+                            shader: msdf;
+                            font: https://raw.githubusercontent.com/etiennepinchon/aframe-fonts/master/fonts/roboto/Roboto-Bold.json;       
+                            wrapCount: 5;
+                            width: 0.3;
+                            align:center;
+                            
+                        " 
+
+                        percent_anim="value: 80"
+
+                        material="
+                            color: #ffffff;
+                        "
+
+                        id="barpercent-1"
+                    
+                        position="0 0 0.2"
+                                                    
+                    ></a-entity>
+                </a-entity>
             </a-marker>
 
             
@@ -195,23 +364,22 @@
 
         <script>
             document.querySelector("#percentage").addEventListener("animstart", function(){
-            let prop = {percent: 0};
+                let prop = {percent: 0};
 
-            let el = this;
-            console.log(el)
-            AFRAME.ANIME({
-                targets: prop,
-                percent: 50 ,
-                round: 1,
-                easing: "linear",
-                duration: 1000,
-                update: function() {
-                    el.setAttribute("text", {
-                        value: Math.round(prop.percent) + "%"
-                    })
-                }
+                let el = this;
+                AFRAME.ANIME({
+                    targets: prop,
+                    percent: 50 ,
+                    round: 1,
+                    easing: "linear",
+                    duration: 1000,
+                    update: function() {
+                        el.setAttribute("text", {
+                            value: Math.round(prop.percent) + "%"
+                        })
+                    }
+                })
             })
-        })
         </script>
     </body>
 </html>
