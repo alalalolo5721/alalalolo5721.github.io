@@ -7,68 +7,139 @@
         <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
         <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script> -->
         <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
         <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
         <meta name="robots" content="noindex" />
         
-<script>
+        <script>
+            window.isZooming = false;
+            window.zoomTarget = "";
+            document.addEventListener("DOMContentLoaded", () =>{
+                let zoomer = document.getElementById("infozoom");
 
-    AFRAME.registerComponent('triggeranimationfor', {
-        multiple: true,
-        schema: {
-            type: 'string'
-        },
-      init: function () {
-          this.el.sceneEl.addEventListener('markerFound', () => {
-            document.querySelector(this.data).emit("animstart");
-
-        })
-      }
-    });
+                if(window.innerWidth > window.innerHeight){
+                    zoomer.style.height = "200px";
+                    zoomer.style.width = "auto";
+                }
+            })
+           
 
 
-    AFRAME.registerComponent('percent-anim', {
-        multiple: true,
-        schema: {
-            value: {
-                type: "int",
-                default: 100
-            },
-            format: {
-                type: "string",
-                default: "$p"
-            }
-        },
-        init: function () {
-            let val = this.data.value;
-            let format = this.data.format
-            this.el.addEventListener("animstart", function(){
-                    
-                    let prop = {percent: 0};
+            AFRAME.registerComponent('zoom-on-click', {
+                // schema:{
+                //     target: {
+                //         type: "string"
+                //     }
+                // },
+                
+                init: function () {
+                    const el = this.el;
+                    let zoomer = document.getElementById("infozoom");
+                    // const clicker = document.querySelector(this.data.target);
+                    el.addEventListener('click', function(ev, target){
+                        window.isZooming = true;
+                        window.zoomTarget = el;
+                        el.setAttribute("material", {opacity:0})
+                        zoomer.src = "resources/fact-1.png";
+                        zoomer.style.bottom = 0;
+                    });
+                }
+            });
 
-                    let el = this;
-                    AFRAME.ANIME({
-                        targets: prop,
-                        percent: val ,
-                        round: 1,
-                        easing: "linear",
-                        duration: 1000,
-                        update: function() {
-                            el.setAttribute("text", {
-                            
-                                value: format.replace("$p", Math.round(prop.percent) + "%")
-                            })
-                        }
-                    })
+            AFRAME.registerComponent('triggeranimationfor', {
+                multiple: true,
+                schema: {
+                    type: 'string'
+                },
+            init: function () {
+                this.el.sceneEl.addEventListener('markerFound', () => {
+                    document.querySelector(this.data).emit("animstart");
+
                 })
-        }
-    });
+            }
+            });
 
-    
-  </script>
+
+            AFRAME.registerComponent('percent-anim', {
+                multiple: true,
+                schema: {
+                    value: {
+                        type: "int",
+                        default: 100
+                    },
+                    format: {
+                        type: "string",
+                        default: "$p"
+                    }
+                },
+                init: function () {
+                    let val = this.data.value;
+                    let format = this.data.format
+                    this.el.addEventListener("animstart", function(){
+                            
+                            let prop = {percent: 0};
+
+                            let el = this;
+                            AFRAME.ANIME({
+                                targets: prop,
+                                percent: val ,
+                                round: 1,
+                                easing: "linear",
+                                duration: 1000,
+                                update: function() {
+                                    el.setAttribute("text", {
+                                    
+                                        value: format.replace("$p", Math.round(prop.percent) + "%")
+                                    })
+                                }
+                            })
+                        })
+                }
+            });
+
+            
+        </script>
+        <style type="text/css">
+            #infozoom{
+                position: absolute;
+                bottom: -300px;
+                width: 100%;
+                height: auto;
+                transition: all .5s ease-out;
+
+                left:50%;
+                transform: translateX(-50%);
+                z-index: 2;
+            }
+
+            #hint{
+                position: absolute;
+                z-index: 2;
+
+                left:50%;
+                transform: translateX(-50%);
+
+                width: 300px;
+                box-sizing: border-box;
+                padding: 10px;
+
+                font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-size: 12pt;
+
+                background: #eee;
+
+
+                transition: all .5s ease-out;
+                box-shadow: 0 0 5px 2px #444;
+            }
+        </style>
     </head>
 
     <body style="margin: 0; overflow: hidden;">
-        
+        <img id="infozoom" src=""/>
+        <!-- <div id="hint" style="top:-100px">
+            You can click the center of the shopping cart to zoom the information.
+        </div> -->
         <a-scene
             vr-mode-ui="enabled: false;"
             loading-screen="enabled: false;"
@@ -77,12 +148,15 @@
             id="scene"
             embedded
             gesture-detector
+            
         >
             <a-assets>
                 <!-- img tag with id, to use input the id to src-->
-                <a-asset-item id="takeaway" src="resources/takeaway.gltf"></a-asset-item>
-                <a-asset-item id="laptop" src="resources/laptop.gltf"></a-asset-item>
+                <!-- <a-asset-item id="takeaway" src="resources/takeaway.gltf"></a-asset-item>
+                <a-asset-item id="laptop" src="resources/laptop.gltf"></a-asset-item> -->
                 <a-asset-item id="cart" src="resources/cart.gltf"></a-asset-item>
+                <a-asset-item id="butterfly" src="resources/butterfly.gltf"></a-asset-item>
+                <a-asset-item id="wolf" src="resources/wolf.gltf"></a-asset-item>
 
                 <img id="fact-1" src="resources/fact-1.png" />
                 <img id="fact-2" src="resources/fact-2.png" />
@@ -112,17 +186,19 @@
                 ></a-mixin>
             </a-assets>
             <a-marker
-                id="animated-marker"
                 type="pattern"
                 preset="custom"
                 url="resources/demo-marker.patt"
                 
-                raycaster="objects: .content"
+                
                 emitevents="true"
-                cursor="fuse: false; rayOrigin: mouse;"
+                
                 id="markerA"
 
                 triggeranimationfor="#thefact-1"
+                raycaster="objects: #thefact-1;"
+                cursor="rayOrigin: mouse;"
+                
             >
                 <a-entity gltf-model="#cart" scale="0.9 0.9 0.9"
                     position="-0.1 -0.2 -0.2"
@@ -135,7 +211,9 @@
                 width="0.885" 
                 height="0.5"  
                 mixin="factmix" 
-                id="thefact-1"></a-image>                          
+                id="thefact-1"
+                ></a-image>       
+                               
             </a-marker>
   
             <a-marker
@@ -144,67 +222,73 @@
                 url="resources/demo-marker-2.patt"
                 raycaster="objects: .content"
                 emitevents="true"
-                cursor="fuse: false; rayOrigin: mouse;"
+                cursor="fuse: true; rayOrigin: mouse;"
                 id="markerB"     
                 
-                triggeranimationfor="#thefact-2"
             >
     
     
-                <a-entity gltf-model="#laptop" scale="10 10 10"
+                <a-entity gltf-model="#wolf" scale="2 2 2"
                     position="0 0 0"
                     rotation="0 -0.5 0"
-            
+                    animation-mixer
                     id="model-2"
                 ></a-entity>
-            
-                <a-image 
-                src="#fact-2"
-                width="0.885" 
-                height="0.5" 
-                 mixin="factmix" 
-                 id="thefact-2"></a-image>  
-            </a-marker>
-
-            
-            <a-marker
-            type="pattern"
-            preset="custom"
-            url="resources/demo-marker-3.patt"
-            raycaster="objects: .content"
-            emitevents="true"
-            cursor="fuse: false; rayOrigin: mouse;"
-            id="markerB"     
-            
-            triggeranimationfor="#thefact-3"
-        >
-                    <a-entity gltf-model="#takeaway" scale="0.002 0.002 0.002"
-                    position="0 0 0"
-                    rotation="0 -45 0"
-
+                <a-entity gltf-model="#butterfly" scale="0.5 0.5 0.5"
+                    position="0.5 0.5 0"
+                    rotation="0 -0.5 0"
+                    animation-mixer
                     id="model-3"
                 ></a-entity>
-
-                <a-image src="#fact-3"
-                width="0.885" 
-                height="0.5"  
-                mixin="factmix" 
-                id="thefact-3"></a-image>        
-
-
-              
+                <a-entity gltf-model="#butterfly" scale="0.5 0.5 0.5"
+                    position="-0.5 0.5 0"
+                    rotation="0 -0.5 0"
+                    animation-mixer
+                    id="model-4"
+                ></a-entity>
+            
+                
             </a-marker>
+
             
             <a-entity light="type: directional; color: #fff; intensity: 1" position="0 0.1 0"></a-entity>
             <a-entity light="type: directional; color: #fff; intensity: 1" position="-0.1 -0.1 0"></a-entity>
             <a-entity light="type: directional; color: #fff; intensity: 1" position="0.1 -0.1 0"></a-entity>
             <a-entity light="type: directional; color: #fff; intensity: 1" position="0 -0.16 0.1"></a-entity>
             <a-entity camera>
+               
                 <a-entity light="type: directional; color: #fff; intensity: 1"></a-entity>
             </a-entity>
         </a-scene>
 
         <script>
+            // let allmarker = document.querySelectorAll("a-marker");
+            // let zoomer = document.getElementById("infozoom");
+            // let hint = document.getElementById("hint");
+            // let hideTimeout;
+            // function hide_zoom(){
+            //     zoomer.style.bottom = "-300px";
+            //     window.isZooming = false;
+
+            //     if(typeof(window.zoomTarget) === 'object')
+            //     window.zoomTarget.setAttribute("material", {opacity: 1})
+            // }
+            // for(let marker of allmarker){
+            //     marker.addEventListener("markerLost", hide_zoom)
+            // }
+
+            // allmarker[0].addEventListener("markerLost", () => {
+            //     hint.setAttribute("style", "top:-100px")
+            //     clearTimeout(hideTimeout)
+            // })
+            // allmarker[0].addEventListener("markerFound", () => {
+            //     hint.setAttribute("style", "top:20px")
+            //     hideTimeout = setTimeout(() => {
+            //         hint.setAttribute("style", "top:-100px")
+            //     }, 5000)
+            // })
+            // zoomer.addEventListener("click", hide_zoom)
+
             // document.querySelector("#percentage").addEventListener("animstart", function(){
             //     let prop = {percent: 0};
 
