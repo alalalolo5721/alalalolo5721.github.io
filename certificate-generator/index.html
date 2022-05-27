@@ -1,0 +1,133 @@
+<head>
+    <title>Certificate Generator</title>
+    <script type="text/javascript" src="libs/pdfkit.js"></script>
+    <script type="text/javascript" src="libs/svgtopdfkit.js"></script>
+    <script type="text/javascript" src="certificate_template.js"></script>
+    <script type="text/javascript" src="generate_png.js"></script>
+    <script type="text/javascript" src="generate_pdf.js"></script>
+
+    <style>
+        body{
+            margin: 0;
+            padding:0;
+            overflow: hidden;
+        }
+
+        #app {
+            width: 600px;
+            
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            padding: 10px;
+
+            text-align: center;
+            font-family: Verdana, sans-serif;
+        }
+
+        #speaker-name {
+            width:500px;
+            font-size: 16pt;
+            padding: 5px 10px;
+
+            border: 1px solid black;
+        }
+
+        button {
+            font-size: 16pt;
+            padding: 5px 25px;
+            margin-top: 15px;
+
+            background: transparent;
+
+            border: 1px solid black;
+
+            transition: all .2s ease-out;
+
+            cursor: pointer;
+        }
+        button:hover {
+            background: #ccc;
+        }
+
+        #download-container {
+            margin-top: 50px;
+        }
+
+        #download-container a {
+            display: inline-block;
+            text-decoration: none;
+
+            color: #fff;
+            background: #036ffc;
+
+            padding: 5px 25px;
+
+            transition: all .2s ease-out;
+        }
+        #download-container a:hover{
+            background:#0549a3
+        }
+
+        #svg_container{
+            visibility: hidden;
+        }
+
+        h2 {
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h2>Chill-Ed Certificate Generator</h2>
+        <input type="text" id="speaker-name" placeholder="Enter speaker name"/><br />
+        <button id="generate-certificate">Generate</button>
+        <div id="download-container" style="display: none;">
+            <a id="pdf-dl" href="" download="certi.pdf">Download PDF</a> &nbsp; &nbsp;
+            <a id="png-dl" href="" download="certi.png">Download PNG</a>
+        </div>
+        
+        
+
+    </div>
+    <div id="svg_container"></div>
+    
+    <script type="text/javascript">
+        var id = function(_id){ return document.getElementById(_id)};
+
+        let speaker_name = id("speaker-name");
+        let generate_btn = id("generate-certificate");
+        let dl_container = id("download-container");
+        let pdf_dl = id("pdf-dl");
+        let png_dl = id("png-dl");
+
+        generate_btn.addEventListener("click", () => {
+            let speaker = speaker_name.value;
+            if(speaker!== ""){
+                let filename = speaker.replace(/\s/g, "-");
+                generate_pdf(speaker, dataurl => {
+                    pdf_dl.href = dataurl;
+                    let pdf_file = filename + ".pdf";
+                    pdf_dl.download = pdf_file;
+                    pdf_dl.innerHTML = pdf_file;
+                    // console.log(dataurl)
+                    generate_png(speaker, dataurl => {
+                        png_dl.href = dataurl;
+                        let png_file = filename + ".png";                    
+                        png_dl.download = png_file;
+                        png_dl.innerHTML = png_file;
+                        dl_container.style.display = "block"
+                    })
+                })
+            } else {
+                alert("Enter speaker's name")
+            }
+        })
+        
+        
+        
+    </script>
+</body>
